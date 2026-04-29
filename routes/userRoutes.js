@@ -17,17 +17,20 @@ router.post("/",async(req,res)=>{
 
 
 router.get("/",async(req,res)=>{
-    const users=await User.find()
-    res.send(users)
-    console.log(users)
-
+    try{
+        const users=await User.find()
+        res.send(users)
+        console.log(users)
+    }
+    catch(err){
+        res.status(500).send({ error: err.message });
+    }
 })
 
 
 router.get("/:id", async (req, res) => {
   try {
-    const rawId = req.params.id;
-    const id = rawId.startsWith(":") ? rawId.slice(1) : rawId;
+    const id = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).send({ error: "Invalid user id" });
@@ -60,7 +63,7 @@ router.put("/:id",async(req,res)=>{
 })
 router.delete("/:id",async(req,res)=>{
     try{
-        const user=await User.findByIdAndDelete(req.param.id)
+        const user=await User.findByIdAndDelete(req.params.id)
         if(!user) return res.status(404).send({error:"User not found"})
             res.send({message:"User deleted successfully"})
     }
